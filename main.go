@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -36,12 +37,8 @@ func CBufNew(content string) (*CBuf, error) {
 	}, nil
 }
 
-func (b *CBuf) isEofIncludePadding() bool {
-	return b.Eofs >= EOFS_PADDING_BUFLEN
-}
-
 func (b *CBuf) isEof() bool {
-	return b.Offset >= b.OrigSize
+	return b.Eofs >= EOFS_PADDING_BUFLEN
 }
 
 func (b *CBuf) nextc() (rune, error) {
@@ -50,7 +47,7 @@ func (b *CBuf) nextc() (rune, error) {
 	// for example: source = { '1', '2', '3', '\0' }, buffer = { '1', '2', '3', '\0', '\0', '\0', '\0', '\0' }
 
 	for {
-		if b.isEofIncludePadding() {
+		if b.isEof() {
 			break
 		}
 
@@ -97,7 +94,7 @@ func (b *CBuf) nextc() (rune, error) {
 			return '\n', nil
 		}
 
-		if b.Offset == b.Size {
+		if b.Offset == b.OrigSize {
 			b.Eofs += 1
 			return EOF, nil
 		}
@@ -121,6 +118,26 @@ func (b *CBuf) nextc() (rune, error) {
 func (b *CBuf) next() string {
 	nextc, _ := b.nextc()
 	return string(nextc)
+}
+
+func (b *CBuf) peekc1() (rune, error) {
+
+	// don't be too smart ;)
+	saveOffset := b.Offset
+	saveLine := b.Line
+	saveColumn := b.Column
+	savePrevc := b.Prevc
+	saveEofs := b.Eofs
+
+	res, _ := b.nextc()
+
+	b.Offset = saveOffset
+	b.Line = saveLine
+	b.Column = saveColumn
+	b.Prevc = savePrevc
+	b.Eofs = saveEofs
+
+	return res, nil
 }
 
 func (b *CBuf) peekc3() ([]rune, error) {
@@ -147,14 +164,111 @@ func (b *CBuf) peekc3() ([]rune, error) {
 	return res, nil
 }
 
-func main() {
-	b, _ := CBufNew("some\\\nstring")
+func (b *CBuf) move(cnt int) {
+	for i := 0; i < cnt; i++ {
+		_, err := b.nextc()
+		if err != nil {
+			return
+		}
+	}
+}
+
+func isIdentStart(r rune) bool {
+	return r == '_' || unicode.IsLetter(r)
+}
+
+func isIdentTail(r rune) bool {
+	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r)
+}
+
+type Token struct {
+	Value string
+	IsEof bool
+}
+
+type Tokenlist struct {
+	Tokens []*Token
+}
+
+func Tokenize(content string) (*Tokenlist, error) {
+	b, err := CBufNew(content)
+	if err != nil {
+		return nil, err
+	}
+
+	tokens := []*Token{}
 	for {
 		if b.isEof() {
 			break
 		}
-		peek3, _ := b.peekc3()
-		fmt.Println(string(peek3))
-		b.nextc()
+		t, _ := nex2(b)
+		tokens = append(tokens, t)
+	}
+
+	return &Tokenlist{
+		Tokens: tokens,
+	}, nil
+}
+
+func nex2(b *CBuf) (*Token, error) {
+	peek3, _ := b.peekc3()
+	c1 := peek3[0]
+	c2 := peek3[1]
+	c3 := peek3[2]
+
+	if c1 == '$' && c2 == '{' && isIdentStart(c3) {
+		b.move(2)
+		value := ""
+		for {
+			peek, err := b.peekc1()
+			if err != nil {
+				return nil, err
+			}
+			if !isIdentTail(peek) {
+				break
+			}
+
+			next := b.next()
+			value += next
+		}
+		return &Token{
+			Value: value,
+		}, nil
+	}
+
+	if b.isEof() {
+		return &Token{
+			Value: "",
+			IsEof: true,
+		}, nil
+	}
+
+	n, err := b.nextc()
+	if err != nil {
+		return nil, err
+	}
+	if n == EOF {
+		return &Token{
+			Value: "",
+			IsEof: true,
+		}, nil
+	}
+
+	return &Token{
+		Value: string(n),
+	}, nil
+}
+
+func main() {
+	b := "so"
+	tokenlist, _ := Tokenize(b)
+	for _, t := range tokenlist.Tokens {
+		if t == nil {
+			break
+		}
+		if t.IsEof {
+			break
+		}
+		fmt.Printf("%s", t.Value)
 	}
 }
