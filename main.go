@@ -3,6 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -12,28 +14,26 @@ const EOFS_PADDING_BUFLEN = 8
 const EOF = -1
 
 type CBuf struct {
-	Buffer   string
-	Size     int
-	OrigSize int
-	Offset   int
-	Line     int
-	Column   int
-	Prevc    rune
-	Eofs     int
+	Buffer string
+	Size   int
+	Offset int
+	Line   int
+	Column int
+	Prevc  rune
+	Eofs   int
 }
 
 func CBufNew(content string) (*CBuf, error) {
 	n := content + strings.Repeat(" ", EOFS_PADDING_BUFLEN)
 
 	return &CBuf{
-		Buffer:   n,
-		Size:     len(n),
-		OrigSize: len(content),
-		Offset:   0,
-		Line:     1,
-		Column:   0,
-		Prevc:    0,
-		Eofs:     -1,
+		Buffer: n,
+		Size:   len(content),
+		Offset: 0,
+		Line:   1,
+		Column: 0,
+		Prevc:  0,
+		Eofs:   -1,
 	}, nil
 }
 
@@ -94,7 +94,7 @@ func (b *CBuf) nextc() (rune, error) {
 			return '\n', nil
 		}
 
-		if b.Offset == b.OrigSize {
+		if b.Offset == b.Size {
 			b.Eofs += 1
 			return EOF, nil
 		}
@@ -192,6 +192,7 @@ const (
 type Token struct {
 	Value string
 	Type  TokType
+	Line  int
 }
 
 type Tokenlist struct {
@@ -246,6 +247,7 @@ func nex2(b *CBuf) (*Token, error) {
 		return &Token{
 			Value: value,
 			Type:  TokenTypeVar,
+			Line:  b.Line,
 		}, nil
 	}
 
@@ -253,6 +255,7 @@ func nex2(b *CBuf) (*Token, error) {
 		return &Token{
 			Value: "",
 			Type:  TokenTypeEof,
+			Line:  b.Line,
 		}, nil
 	}
 
@@ -264,6 +267,7 @@ func nex2(b *CBuf) (*Token, error) {
 		return &Token{
 			Value: "",
 			Type:  TokenTypeEof,
+			Line:  b.Line,
 		}, nil
 	}
 
@@ -273,10 +277,30 @@ func nex2(b *CBuf) (*Token, error) {
 	}, nil
 }
 
-func main() {
-	b := "${var} no var"
-	tokenlist, _ := Tokenize(b)
-	for _, t := range tokenlist.Tokens {
+func readFile(name string) (string, error) {
+	b, err := os.ReadFile(name) // just pass the file name
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+func (tl *Tokenlist) dumpStat() {
+	for _, t := range tl.Tokens {
+		if t == nil {
+			break
+		}
+		if t.Type == TokenTypeEof {
+			break
+		}
+		if t.Type == TokenTypeVar {
+			fmt.Printf("var at line: %d, named: %s\n", t.Line, t.Value)
+		}
+	}
+}
+
+func (tl *Tokenlist) dump() {
+	for _, t := range tl.Tokens {
 		if t == nil {
 			break
 		}
@@ -289,4 +313,16 @@ func main() {
 			fmt.Printf("%s", t.Value)
 		}
 	}
+}
+
+func main() {
+	// "${var} no var"
+
+	b, err := readFile("main.go")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tl, _ := Tokenize(b)
+	tl.dumpStat()
 }
