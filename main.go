@@ -181,9 +181,17 @@ func isIdentTail(r rune) bool {
 	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 
+type TokType int
+
+const (
+	TokenTypeVar TokType = iota
+	TokenTypeTxt
+	TokenTypeEof
+)
+
 type Token struct {
 	Value string
-	IsEof bool
+	Type  TokType
 }
 
 type Tokenlist struct {
@@ -231,15 +239,20 @@ func nex2(b *CBuf) (*Token, error) {
 			next := b.next()
 			value += next
 		}
+		next, _ := b.nextc()
+		if next != '}' {
+			return nil, errors.New("unclosed_brace")
+		}
 		return &Token{
 			Value: value,
+			Type:  TokenTypeVar,
 		}, nil
 	}
 
 	if b.isEof() {
 		return &Token{
 			Value: "",
-			IsEof: true,
+			Type:  TokenTypeEof,
 		}, nil
 	}
 
@@ -250,25 +263,30 @@ func nex2(b *CBuf) (*Token, error) {
 	if n == EOF {
 		return &Token{
 			Value: "",
-			IsEof: true,
+			Type:  TokenTypeEof,
 		}, nil
 	}
 
 	return &Token{
 		Value: string(n),
+		Type:  TokenTypeTxt,
 	}, nil
 }
 
 func main() {
-	b := "so"
+	b := "${var} no var"
 	tokenlist, _ := Tokenize(b)
 	for _, t := range tokenlist.Tokens {
 		if t == nil {
 			break
 		}
-		if t.IsEof {
+		if t.Type == TokenTypeEof {
 			break
 		}
-		fmt.Printf("%s", t.Value)
+		if t.Type == TokenTypeVar {
+			fmt.Printf("${%s}", t.Value)
+		} else {
+			fmt.Printf("%s", t.Value)
+		}
 	}
 }
