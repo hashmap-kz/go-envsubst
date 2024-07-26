@@ -1,0 +1,62 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+./bin/
+bin/
+bin/**
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+./out/
+.out/**
+.out
+
+.vagrant/**
+.vagrant
+.vagrant/
+
+*.exe
+
+
+# Local Terraform plugins
+**/.terraform/**
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+*.lock.hcl
+
+# Crash log files
+crash.log
+crash.*.log
+
+*.log
