@@ -278,7 +278,7 @@ func nex2(b *CBuf) (*Token, error) {
 }
 
 func readFile(name string) (string, error) {
-	b, err := os.ReadFile(name) // just pass the file name
+	b, err := os.ReadFile(name)
 	if err != nil {
 		return "", err
 	}
@@ -318,11 +318,12 @@ func (tl *Tokenlist) dump() {
 func main() {
 	// "${var} no var"
 
-	b, err := readFile("main.go")
+	b, err := readFile("data/manifests.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	tl, _ := Tokenize(b)
 	tl.dumpStat()
+	tl.dump()
 }
