@@ -99,12 +99,12 @@ func (b *CBuf) nextc() (rune, error) {
 			return EOF, nil
 		}
 
-		next, _ := utf8.DecodeRuneInString(b.Buffer[b.Offset:])
+		next, cnt := utf8.DecodeRuneInString(b.Buffer[b.Offset:])
 		b.Offset += 1
 		b.Column += 1
 		b.Prevc = next
 
-		if next == 0 {
+		if cnt == 0 || next == utf8.RuneError {
 			b.Eofs += 1
 			return EOF, nil
 		}
