@@ -287,6 +287,7 @@ func readFile(name string) (string, error) {
 }
 
 func (tl *Tokenlist) dumpStat() {
+	fmt.Println("LINE    NAME")
 	for _, t := range tl.Tokens {
 		if t == nil {
 			break
@@ -295,7 +296,7 @@ func (tl *Tokenlist) dumpStat() {
 			break
 		}
 		if t.Type == TokenTypeVar {
-			fmt.Printf("var at line: %d, named: %s\n", t.Line, t.Value)
+			fmt.Printf("%-7d %s\n", t.Line, t.Value)
 		}
 	}
 }
