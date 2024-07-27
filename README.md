@@ -73,7 +73,7 @@ if isEmpty(GENVSUBST_ALLOWED) && isEmpty(GENVSUBST_ALLOWED_WITH_PREFIXES)
 ```
 LINE    NAME                             VALUE
 6       CI_PROJECT_NAME                  postgres
-19      CI_PROJECT_PATH                  cv/system/postgresql
+19      CI_PROJECT_PATH                  cv/system/postgres
 19      CI_COMMIT_REF_NAME               dev
 25      CI_PROJECT_NAME                  postgres
 38      CI_PROJECT_NAME                  postgres
