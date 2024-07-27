@@ -49,27 +49,21 @@ export GENVSUBST_RESTRICTED_WITH_PREFIXES='SECRET_ VAULT_'
 > This pseudocode shows the logic:
 
 ```
-if (variable in GENVSUBST_ALLOWED) || 
-    starts_with(variable, any(GENVSUBST_ALLOWED_WITH_PREFIXES)) 
+allowToExpand = (variable not in GENVSUBST_RESTRICTED) 
+    && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIXES))
+        
+if isEmpty(GENVSUBST_ALLOWED) && isEmpty(GENVSUBST_ALLOWED_WITH_PREFIXES) 
 {
-    
-    // this means that GENVSUBST_ALLOWED or GENVSUBST_ALLOWED_WITH_PREFIXES is set, and 
-    // we have to check whether the variable is allowed for being expanded
-    //
-    allowToExpand = (variable not in GENVSUBST_RESTRICTED) 
-        && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIXES))
     if allowToExpand {
         expand(variable)
     }
 } else {
 
-    // this means that GENVSUBST_ALLOWED or GENVSUBST_ALLOWED_WITH_PREFIXES is not set, and 
-    // we have to check whether the variable is allowed for being expanded
-    //
-    allowToExpand = (variable not in GENVSUBST_RESTRICTED) 
-        && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIXES))
     if allowToExpand {
-        expand(variable)
+        if (variable in GENVSUBST_ALLOWED) 
+            || starts_with(variable, any(GENVSUBST_ALLOWED_WITH_PREFIXES)) {
+            expand(variable)
+        }
     }    
 }
 ```
@@ -77,16 +71,16 @@ if (variable in GENVSUBST_ALLOWED) ||
 ### Additional
 > You may use internal methods for debug your inputs. The result is look like this:
 ```
-LINE    NAME
-6       CI_PROJECT_NAME
-19      CI_PROJECT_PATH
-19      CI_COMMIT_REF_NAME
-25      CI_PROJECT_NAME
-38      CI_PROJECT_NAME
-54      CI_PROJECT_NAME
-75      CI_PROJECT_ROOT_NAMESPACE
-75      CI_PROJECT_NAME
-85      APP_IMAGE
+LINE    NAME                             VALUE
+6       CI_PROJECT_NAME                  postgres
+19      CI_PROJECT_PATH                  cv/system/postgresql
+19      CI_COMMIT_REF_NAME               dev
+25      CI_PROJECT_NAME                  postgres
+38      CI_PROJECT_NAME                  postgres
+54      CI_PROJECT_NAME                  postgres
+75      CI_PROJECT_ROOT_NAMESPACE        cv
+75      CI_PROJECT_NAME                  postgres
+85      APP_IMAGE                        postgres:latest
 ```
 > Tokenizer is knows exactly what he should to expand and where.
 > 
