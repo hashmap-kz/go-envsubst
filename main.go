@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	cfg2 "github.com/hashmap.kz/go-envsubst/pkg/cfg"
 	"github.com/hashmap.kz/go-envsubst/pkg/tok"
 	"github.com/hashmap.kz/go-envsubst/pkg/util"
+	"io"
 	"log"
+	"os"
 )
 
 func tokenizeFile(fname string) *tok.Tokenlist {
@@ -19,11 +20,16 @@ func tokenizeFile(fname string) *tok.Tokenlist {
 }
 
 func main() {
-	cfg := cfg2.NewConfig()
-	fmt.Println(cfg)
+	bytes, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	tl := tokenizeFile("data/03-manifests.yaml")
-	tl.DumpStat()
-	fmt.Println(tl.DumpExpanded())
+	content := string(bytes)
+	tl, err := tok.Tokenize(content)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	fmt.Print(tl.DumpExpanded())
 }
