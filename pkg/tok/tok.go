@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hashmap.kz/go-envsubst/pkg/cbuf"
 	"github.com/hashmap.kz/go-envsubst/pkg/util"
+	"os"
 )
 
 type TokType int
@@ -135,7 +136,7 @@ func getOneIdent(b *cbuf.CBuf) (*Token, error) {
 }
 
 func (tl *Tokenlist) DumpStat() {
-	fmt.Println("LINE    NAME")
+	fmt.Println("LINE    NAME                             VALUE")
 	for _, t := range tl.Tokens {
 		if t == nil {
 			break
@@ -144,7 +145,7 @@ func (tl *Tokenlist) DumpStat() {
 			break
 		}
 		if t.Type == TokenTypeVar {
-			fmt.Printf("%-7d %s\n", t.Line, t.Value)
+			fmt.Printf("%-7d %-32s %s\n", t.Line, t.Value, os.Getenv(t.Value))
 		}
 	}
 }
