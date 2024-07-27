@@ -49,6 +49,16 @@ func parseListFlags(where arrayFlags) map[string]string {
 	return tmp
 }
 
+func tokenizeFile(fname string) *tok.Tokenlist {
+	b, err := util.ReadFile(fname)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tl, _ := tok.Tokenize(b)
+	return tl
+}
+
 func main() {
 	// "${var} no var"
 
@@ -62,12 +72,11 @@ func main() {
 	fmt.Println(parseListFlags(allowedVars))
 	fmt.Println(parseListFlags(forbiddenVars))
 
-	b, err := util.ReadFile("data/manifests.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
+	tl := tokenizeFile("data/03-manifests.yaml")
+	tl.DumpStat()
+	//tl.Dump()
 
-	tl, _ := tok.Tokenize(b)
+	tl = tokenizeFile("data/04-manifests.yaml")
 	tl.DumpStat()
 	//tl.Dump()
 }

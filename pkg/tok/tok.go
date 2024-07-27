@@ -51,6 +51,7 @@ func nex2(b *cbuf.CBuf) (*Token, error) {
 	c2 := peek3[1]
 	c3 := peek3[2]
 
+	// ${EDITOR}
 	if c1 == '$' && c2 == '{' && util.IsIdentStart(c3) {
 		b.Move(2)
 		ident, err := getOneIdent(b)
@@ -58,6 +59,13 @@ func nex2(b *cbuf.CBuf) (*Token, error) {
 		if next != '}' {
 			return nil, errors.New("unclosed_brace")
 		}
+		return ident, err
+	}
+
+	// $EDITOR
+	if c1 == '$' && util.IsIdentStart(c2) {
+		b.Move(1)
+		ident, err := getOneIdent(b)
 		return ident, err
 	}
 
