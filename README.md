@@ -34,12 +34,12 @@ export GENVSUBST_RESTRICTED='SECRET_X SECRET_Y'
 
 # expand ONLY if the name of env-var starts with any of these prefixes
 #
-export GENVSUBST_ALLOWED_WITH_PREFIX='CI_ APP_'
+export GENVSUBST_ALLOWED_WITH_PREFIXES='CI_ APP_'
 
 # do NOT expand any of env-var if its name starts with any of these prefixes. 
 # this setting is also has the highest priority.
 #
-export GENVSUBST_RESTRICTED_WITH_PREFIX='SECRET_ VAULT_'
+export GENVSUBST_RESTRICTED_WITH_PREFIXES='SECRET_ VAULT_'
 ```
 
 > The combination is as simple as it looks like:
@@ -50,24 +50,24 @@ export GENVSUBST_RESTRICTED_WITH_PREFIX='SECRET_ VAULT_'
 
 ```
 if (variable in GENVSUBST_ALLOWED) || 
-    starts_with(variable, any(GENVSUBST_ALLOWED_WITH_PREFIX)) 
+    starts_with(variable, any(GENVSUBST_ALLOWED_WITH_PREFIXES)) 
 {
     
-    // this means that GENVSUBST_ALLOWED or GENVSUBST_ALLOWED_WITH_PREFIX is set, and 
+    // this means that GENVSUBST_ALLOWED or GENVSUBST_ALLOWED_WITH_PREFIXES is set, and 
     // we have to check whether the variable is allowed for being expanded
     //
     allowToExpand = (variable not in GENVSUBST_RESTRICTED) 
-        && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIX))
+        && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIXES))
     if allowToExpand {
         expand(variable)
     }
 } else {
 
-    // this means that GENVSUBST_ALLOWED or GENVSUBST_ALLOWED_WITH_PREFIX is not set, and 
+    // this means that GENVSUBST_ALLOWED or GENVSUBST_ALLOWED_WITH_PREFIXES is not set, and 
     // we have to check whether the variable is allowed for being expanded
     //
     allowToExpand = (variable not in GENVSUBST_RESTRICTED) 
-        && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIX))
+        && !starts_with(variable, any(GENVSUBST_RESTRICTED_WITH_PREFIXES))
     if allowToExpand {
         expand(variable)
     }    

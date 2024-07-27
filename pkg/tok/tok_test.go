@@ -123,7 +123,7 @@ spec:
 	input = strings.TrimSpace(input)
 
 	tokenlist := mustTokenizeString(input)
-	tokenized := tokenlist.Dump()
+	tokenized := tokenlist.DumpRawUnexpanded()
 
 	assert.Equal(t, input, tokenized)
 }

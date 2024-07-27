@@ -149,7 +149,7 @@ func (tl *Tokenlist) DumpStat() {
 	}
 }
 
-func (tl *Tokenlist) Dump() string {
+func (tl *Tokenlist) DumpRawUnexpanded() string {
 	result := ""
 	for _, t := range tl.Tokens {
 		if t == nil {
