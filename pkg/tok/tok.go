@@ -167,3 +167,33 @@ func (tl *Tokenlist) DumpRawUnexpanded() string {
 	}
 	return result
 }
+
+func (tl *Tokenlist) DumpExpanded() string {
+	result := ""
+	for _, t := range tl.Tokens {
+		if t == nil {
+			break
+		}
+		if t.Type == TokenTypeEof {
+			break
+		}
+		if t.Type == TokenTypeVar {
+			result += expandOneVar(t)
+		} else {
+			result += fmt.Sprintf("%s", t.Value)
+		}
+	}
+	return result
+}
+
+// TODO: this may be optimized a LOT with the global hashtable
+
+func expandOneVar(t *Token) string {
+	value := t.Value
+
+	env := os.Getenv(value)
+	if env == "" {
+
+	}
+	return env
+}

@@ -82,9 +82,9 @@ LINE    NAME                             VALUE
 75      CI_PROJECT_NAME                  postgres
 85      APP_IMAGE                        postgres:latest
 ```
-> Tokenizer is knows exactly what he should to expand and where.
+> Tokenizer knows exactly what he has to expand and where.
 > 
-> Sometimes is suitable to --dry-run and check before injecting the flow in your pipelines.
+> Sometimes is suitable to --dry-run and check the output before injecting the flow in your pipelines.
 
 
 

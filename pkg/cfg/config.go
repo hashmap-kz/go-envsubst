@@ -31,29 +31,31 @@ func NewConfig() *Config {
 }
 
 func parseList(env string) map[string]string {
-	tmp := map[string]string{}
+	result := map[string]string{}
 
 	elem := strings.TrimSpace(os.Getenv(env))
 	if elem == "" {
-		return tmp
+		return result
 	}
 
 	if strings.Contains(elem, " ") && strings.Contains(elem, ",") {
-		log.Fatal("cannot use both spaces and commas in flags: " + elem)
+		log.Fatalf("cannot use both spaces and commas in setting: %s\n", env)
 	}
 
 	if strings.Contains(elem, " ") {
 		for _, s := range strings.Split(elem, " ") {
-			tmp[s] = s
+			s = strings.TrimSpace(s)
+			result[s] = s
 		}
 	} else if strings.Contains(elem, ",") {
 		for _, s := range strings.Split(elem, ",") {
-			tmp[s] = s
+			s = strings.TrimSpace(s)
+			result[s] = s
 		}
 	} else {
 		// just single value
-		tmp[elem] = elem
+		result[elem] = elem
 	}
 
-	return tmp
+	return result
 }
