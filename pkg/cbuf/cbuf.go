@@ -7,7 +7,7 @@ import (
 )
 
 const EOFS_PADDING_BUFLEN = 8
-const EOF = -1
+const EOF = int32(-1)
 
 type CBuf struct {
 	Buffer string
