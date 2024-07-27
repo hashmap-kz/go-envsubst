@@ -1,7 +1,14 @@
 # Architecture
 
+- [Usage](#usage)
 - [Project postulated](#project-postulates)
 - [Configuration](#configuration)
+
+## Usage:
+```
+cat data/03-manifests.yaml | genvsubst
+genvsubst < data/03-manifests.yaml 
+```
 
 ## Project postulates:
 
