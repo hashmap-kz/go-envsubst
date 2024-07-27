@@ -32,12 +32,29 @@ func Tokenize(content string) (*Tokenlist, error) {
 	}
 
 	tokens := []*Token{}
+
+	var prevToken *Token
 	for {
 		if b.IsEof() {
 			break
 		}
 		t, _ := nex2(b)
-		tokens = append(tokens, t)
+
+		// merge uninteresting for us 'plain text'
+		if t.Type == TokenTypeTxt && (prevToken != nil && prevToken.Type == TokenTypeTxt) {
+			if len(tokens) > 0 {
+				// insert
+				lastIdx := len(tokens) - 1
+				tokens[lastIdx].Value += t.Value
+			} else {
+				// append
+				tokens = append(tokens, t)
+			}
+		} else {
+			tokens = append(tokens, t)
+		}
+		prevToken = t
+
 	}
 
 	return &Tokenlist{
@@ -132,7 +149,8 @@ func (tl *Tokenlist) DumpStat() {
 	}
 }
 
-func (tl *Tokenlist) Dump() {
+func (tl *Tokenlist) Dump() string {
+	result := ""
 	for _, t := range tl.Tokens {
 		if t == nil {
 			break
@@ -141,9 +159,10 @@ func (tl *Tokenlist) Dump() {
 			break
 		}
 		if t.Type == TokenTypeVar {
-			fmt.Printf("${%s}", t.Value)
+			result += fmt.Sprintf("${%s}", t.Value)
 		} else {
-			fmt.Printf("%s", t.Value)
+			result += fmt.Sprintf("%s", t.Value)
 		}
 	}
+	return result
 }
