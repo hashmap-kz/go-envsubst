@@ -43,6 +43,10 @@ func Tokenize(content string) (*Tokenlist, error) {
 			break
 		}
 		t, _ := nex2(b)
+		if t.Type == TokenTypeEof {
+			tokens = append(tokens, t)
+			break
+		}
 
 		// merge uninteresting for us 'plain text'
 		if t.Type == TokenTypeTxt && (prevToken != nil && prevToken.Type == TokenTypeTxt) {
