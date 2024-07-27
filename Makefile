@@ -10,4 +10,7 @@ fmt:
 test:
 	go test ./...
 
-all: fmt test build
+mod:
+	go mod tidy
+
+all: mod fmt test build
