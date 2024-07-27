@@ -74,7 +74,23 @@ if (variable in GENVSUBST_ALLOWED) ||
 }
 ```
 
-
+### Additional
+> You may use internal methods for debug your inputs. The result is look like this:
+```
+LINE    NAME
+6       CI_PROJECT_NAME
+19      CI_PROJECT_PATH
+19      CI_COMMIT_REF_NAME
+25      CI_PROJECT_NAME
+38      CI_PROJECT_NAME
+54      CI_PROJECT_NAME
+75      CI_PROJECT_ROOT_NAMESPACE
+75      CI_PROJECT_NAME
+85      APP_IMAGE
+```
+> Tokenizer is knows exactly what he should to expand and where.
+> 
+> Sometimes is suitable to --dry-run and check before injecting the flow in your pipelines.
 
 
 
