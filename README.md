@@ -6,11 +6,11 @@
 
 ## Usage:
 ```
-cat data/03-manifests.yaml | genvsubst
-genvsubst < data/03-manifests.yaml 
+cat data/03-manifests.yaml | go-envsubst
+go-envsubst < data/03-manifests.yaml 
 
 # print replacement table
-genvsubst -dry-run < data/03-manifests.yaml 
+go-envsubst -dry-run < data/03-manifests.yaml 
 ```
 
 ## Project postulates:

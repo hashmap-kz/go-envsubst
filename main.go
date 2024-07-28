@@ -13,7 +13,7 @@ var (
 	dryRun = flag.Bool("dry-run", false, "")
 )
 
-var usage = `Usage: genvsubst [options...] <input>
+var usage = `Usage: go-envsubst [options...] <input>
 Options:
   -dry-run   Print replacement table
 `
