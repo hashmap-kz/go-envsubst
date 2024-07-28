@@ -167,7 +167,7 @@ func (tl *Tokenlist) DumpStat() {
 			break
 		}
 		if t.Type == TokenTypeVar {
-			fmt.Printf("%-7d %-32s %s\n", t.Line, t.Value, os.Getenv(t.Value))
+			fmt.Printf("%-7d %-32s %s\n", t.Line, t.Value, os.Getenv(unbraceIdent(t.Value)))
 		}
 	}
 }

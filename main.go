@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/hashmap.kz/go-envsubst/pkg/tok"
 	"io"
@@ -8,7 +9,13 @@ import (
 	"os"
 )
 
+var (
+	dryRun = flag.Bool("dry-run", false, "")
+)
+
 func main() {
+	flag.Parse()
+
 	bytes, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatal(err)
@@ -20,5 +27,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Print(tl.DumpExpanded())
+	if *dryRun {
+		tl.DumpStat()
+	} else {
+		fmt.Print(tl.DumpExpanded())
+	}
 }
