@@ -4,12 +4,7 @@ import (
 	"log"
 	"os"
 	"strings"
-	"sync"
 )
-
-var once sync.Once
-
-var config *Config
 
 const (
 	GenvsubstAllowed                = "GENVSUBST_ALLOWED"
@@ -26,14 +21,14 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	once.Do(func() {
-		config = &Config{
-			Allowed:                parseList(GenvsubstAllowed),
-			AllowedWithPrefixes:    parseList(GenvsubstAllowedWithPrefixes),
-			Restricted:             parseList(GenvsubstRestricted),
-			RestrictedWithPrefixes: parseList(GenvsubstRestrictedWithPrefixes),
-		}
-	})
+
+	config := &Config{
+		Allowed:                parseList(GenvsubstAllowed),
+		AllowedWithPrefixes:    parseList(GenvsubstAllowedWithPrefixes),
+		Restricted:             parseList(GenvsubstRestricted),
+		RestrictedWithPrefixes: parseList(GenvsubstRestrictedWithPrefixes),
+	}
+
 	return config
 }
 

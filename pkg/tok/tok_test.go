@@ -360,3 +360,54 @@ spec:
 
 	assert.Equal(t, expected, tokenized)
 }
+
+func TestRestricted(t *testing.T) {
+	os.Setenv("SECRET", "1")
+	os.Setenv("XXX", "2")
+	os.Setenv("GENVSUBST_RESTRICTED", "SECRET")
+
+	input := "${SECRET}-${XXX}-${SECRET}"
+	tokenlist := mustTokenizeString(input)
+	tokenized := tokenlist.DumpExpanded()
+
+	assert.Equal(t, "${SECRET}-2-${SECRET}", tokenized)
+}
+
+func TestRestrictedWithPrefixes(t *testing.T) {
+	os.Setenv("SECRET", "1")
+	os.Setenv("XXX", "2")
+	os.Setenv("GENVSUBST_RESTRICTED_WITH_PREFIXES", "SECR")
+
+	input := "${SECRET}-${XXX}-${SECRET}"
+	tokenlist := mustTokenizeString(input)
+	tokenized := tokenlist.DumpExpanded()
+
+	assert.Equal(t, "${SECRET}-2-${SECRET}", tokenized)
+}
+
+func TestAllowed(t *testing.T) {
+	os.Setenv("var1", "1")
+	os.Setenv("var2", "2")
+	os.Setenv("var3", "3")
+	os.Setenv("GENVSUBST_ALLOWED", "var2")
+
+	input := "${var1}-${var2}-${var3}"
+	tokenlist := mustTokenizeString(input)
+	tokenized := tokenlist.DumpExpanded()
+
+	assert.Equal(t, "${var1}-2-${var3}", tokenized)
+}
+
+func TestAllowedWithPrefixes(t *testing.T) {
+	os.Setenv("var1", "1")
+	os.Setenv("var2", "2")
+	os.Setenv("var3", "3")
+	os.Setenv("ANOTHER", "@@@")
+	os.Setenv("GENVSUBST_ALLOWED_WITH_PREFIXES", "var")
+
+	input := "${var1}-${var2}-${var3}-${ANOTHER}"
+	tokenlist := mustTokenizeString(input)
+	tokenized := tokenlist.DumpExpanded()
+
+	assert.Equal(t, "1-2-3-${ANOTHER}", tokenized)
+}
