@@ -1,5 +1,5 @@
 build:
-	go build -o bin/goenvsubst main.go
+	go build -o bin/genvsubst main.go
 
 run:
 	go run main.go
