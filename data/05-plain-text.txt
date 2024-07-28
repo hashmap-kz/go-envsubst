@@ -1,0 +1,3 @@
+#${not_a_var
+${this_is_var}
+$this_is_var

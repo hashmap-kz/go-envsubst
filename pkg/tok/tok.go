@@ -1,7 +1,6 @@
 package tok
 
 import (
-	"errors"
 	"fmt"
 	"github.com/hashmap.kz/go-envsubst/pkg/cbuf"
 	"github.com/hashmap.kz/go-envsubst/pkg/cfg"
@@ -42,7 +41,12 @@ func Tokenize(content string) (*Tokenlist, error) {
 		if b.IsEof() {
 			break
 		}
-		t, _ := nex2(b)
+
+		t, err := nex2(b)
+		if err != nil {
+			return nil, err
+		}
+
 		if t.Type == TokenTypeEof {
 			tokens = append(tokens, t)
 			break
@@ -89,8 +93,14 @@ func nex2(b *cbuf.CBuf) (*Token, error) {
 			return nil, err
 		}
 
+		// just random text, perhaps commented, anyway: not a var
 		if next != '}' {
-			return nil, errors.New("unclosed_brace")
+			unknown := &Token{
+				Value: "${" + ident.Value + string(next),
+				Type:  TokenTypeTxt,
+				Line:  ident.Line,
+			}
+			return unknown, nil
 		}
 
 		ident.Value = fmt.Sprintf("${%s}", ident.Value)
