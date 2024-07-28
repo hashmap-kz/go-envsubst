@@ -60,3 +60,5 @@ crash.log
 crash.*.log
 
 *.log
+
+dist/
