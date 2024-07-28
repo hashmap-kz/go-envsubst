@@ -2,6 +2,7 @@ package tok
 
 import (
 	"fmt"
+	"github.com/hashmap-kz/go-texttable/pkg/table"
 	"github.com/hashmap.kz/go-envsubst/pkg/cbuf"
 	"github.com/hashmap.kz/go-envsubst/pkg/cfg"
 	"github.com/hashmap.kz/go-envsubst/pkg/util"
@@ -168,7 +169,11 @@ func getOneIdent(b *cbuf.CBuf) (*Token, error) {
 }
 
 func (tl *Tokenlist) DumpStat() {
-	fmt.Println("LINE    NAME                             VALUE")
+	tbl := table.NewTextTable()
+	tbl.DefineColumn("LINE", table.LEFT, table.LEFT)
+	tbl.DefineColumn("ENV", table.LEFT, table.LEFT)
+	tbl.DefineColumn("VALUE", table.LEFT, table.LEFT)
+
 	for _, t := range tl.Tokens {
 		if t == nil {
 			break
@@ -177,9 +182,11 @@ func (tl *Tokenlist) DumpStat() {
 			break
 		}
 		if t.Type == TokenTypeVar {
-			fmt.Printf("%-7d %-32s %s\n", t.Line, t.Value, os.Getenv(unbraceIdent(t.Value)))
+			tbl.InsertAllAndFinishRow(fmt.Sprintf("%d", t.Line), t.Value, os.Getenv(unbraceIdent(t.Value)))
 		}
 	}
+
+	fmt.Println(tbl.Print())
 }
 
 func (tl *Tokenlist) DumpRawUnexpanded() string {

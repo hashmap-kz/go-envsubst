@@ -2,7 +2,10 @@ module github.com/hashmap.kz/go-envsubst
 
 go 1.22.3
 
-require github.com/stretchr/testify v1.9.0
+require (
+	github.com/hashmap-kz/go-texttable v0.0.0-20240728073558-23d0fd7f46bd
+	github.com/stretchr/testify v1.9.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
